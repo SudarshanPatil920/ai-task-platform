@@ -13,6 +13,10 @@ app.use(cors());
 app.use(helmet());
 app.use(limiter);
 
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 

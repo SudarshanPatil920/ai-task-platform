@@ -182,3 +182,30 @@
     border-right-color: var(--border);
   }
 }
+
+
+.app-shell {
+  height: 100vh;
+  display: flex;
+  justify-content: center;   /* horizontal center */
+  align-items: center;       /* vertical center */
+}
+
+.main-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content-grid {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-panel {
+  width: 400px; /* or 100% with max-width */
+  max-width: 90%;
+}

@@ -32,7 +32,7 @@ export default function TaskForm({ onTaskCreated, onRefresh }) {
 
     try {
       const { data } = await api.post(
-        "/api/tasks",
+        "/tasks",
         {
           title: form.title.trim(),
           input: form.input,
