@@ -44,8 +44,10 @@ spec:
                   key: MONGO_URI
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: "100m"
+              memory: "128Mi"
             limits:
-              cpu: 400m
-              memory: 256Mi
+              cpu: "500m"
+              memory: "512Mi"
+          # Worker runs as a background consumer and does not expose an application port.
+          # Probes are intentionally omitted to avoid breaking the current working setup.

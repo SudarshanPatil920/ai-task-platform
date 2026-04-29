@@ -56,18 +56,18 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: 150m
-              memory: 256Mi
+              cpu: "100m"
+              memory: "128Mi"
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: "500m"
+              memory: "512Mi"
           readinessProbe:
             tcpSocket:
               port: 5000
             initialDelaySeconds: 10
-            periodSeconds: 10
+            periodSeconds: 5
           livenessProbe:
             tcpSocket:
               port: 5000
-            initialDelaySeconds: 20
-            periodSeconds: 20
+            initialDelaySeconds: 30
+            periodSeconds: 10
