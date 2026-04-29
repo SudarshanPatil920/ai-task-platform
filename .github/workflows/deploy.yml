@@ -1,0 +1,46 @@
+name: Docker Image Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-backend:${{ github.sha }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-frontend:${{ github.sha }}
+
+      - name: Build and push worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./worker
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-worker:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-worker:${{ github.sha }}

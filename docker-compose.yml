@@ -1,8 +1,4 @@
-version: "3.9"
-
 services:
-
-  # 🟢 MongoDB
   mongo:
     image: mongo:7
     container_name: mongo
@@ -12,7 +8,6 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  # 🔴 Redis
   redis:
     image: redis:7
     container_name: redis
@@ -20,9 +15,9 @@ services:
     ports:
       - "6379:6379"
 
-  # ⚙️ Backend (Node.js)
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     container_name: backend
     restart: always
     ports:
@@ -33,24 +28,24 @@ services:
       - mongo
       - redis
 
-  # 🐍 Worker (Python)
   worker:
-    build: ./worker
+    build:
+      context: ./worker
     container_name: worker
     restart: always
     env_file:
       - ./worker/.env
     depends_on:
-      - mongo
       - redis
+      - mongo
 
-  # ⚛️ Frontend (React)
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     container_name: frontend
     restart: always
     ports:
-      - "3000:3000"
+      - "5173:8080"
     depends_on:
       - backend
 
