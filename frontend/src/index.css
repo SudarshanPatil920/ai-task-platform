@@ -473,6 +473,12 @@ button {
   font-weight: 600;
 }
 
+.task-logs {
+  color: #475569;
+  font-family: "Courier New", monospace;
+  font-size: 0.92rem;
+}
+
 .processing-text {
   color: #1d4ed8;
   font-weight: 600;

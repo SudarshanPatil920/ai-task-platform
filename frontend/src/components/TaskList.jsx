@@ -71,6 +71,13 @@ export default function TaskList({ tasks, loading, onRefresh }) {
                       <p className="task-text processing-text">Processing...</p>
                     </div>
                   ) : null}
+
+                  {task.logs ? (
+                    <div className="task-section">
+                      <span className="task-section-label">Logs</span>
+                      <p className="task-text task-logs">{task.logs}</p>
+                    </div>
+                  ) : null}
                 </article>
               );
             })}

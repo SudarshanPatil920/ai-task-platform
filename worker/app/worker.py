@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import traceback
 
@@ -14,7 +15,11 @@ QUEUE_NAME = "task_queue"
 def connect_redis():
     while True:
         try:
-            client = redis.Redis(host="redis", port=6379, decode_responses=True)
+            client = redis.Redis(
+                host=os.getenv("REDIS_HOST", "redis"),
+                port=int(os.getenv("REDIS_PORT", "6379")),
+                decode_responses=True,
+            )
             client.ping()
             print("Connected to Redis", flush=True)
             return client

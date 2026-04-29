@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -112,7 +112,7 @@ function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     if (isFetchingRef.current) {
       return;
     }
@@ -132,7 +132,7 @@ function AppLayout() {
       isFetchingRef.current = false;
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchTasks();
@@ -144,7 +144,7 @@ function AppLayout() {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [fetchTasks]);
 
   useEffect(() => {
     setSidebarOpen(false);

@@ -8,6 +8,9 @@ on:
 jobs:
   publish-images:
     runs-on: ubuntu-latest
+    env:
+      INFRA_REPO: ${{ secrets.INFRA_REPO }}
+      INFRA_REPO_TOKEN: ${{ secrets.INFRA_REPO_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -15,14 +18,14 @@ jobs:
       - name: Backend lint check
         working-directory: ./backend
         run: |
-          npm install
-          npm run lint || echo "lint skipped"
+          npm ci
+          npm run lint
 
       - name: Frontend lint check
         working-directory: ./frontend
         run: |
-          npm install
-          npm run lint || echo "lint skipped"
+          npm ci
+          npm run lint
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -56,3 +59,31 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-worker:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/ai-task-platform-worker:${{ github.sha }}
+
+      - name: Checkout infrastructure repository
+        if: ${{ env.INFRA_REPO != '' && env.INFRA_REPO_TOKEN != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.INFRA_REPO }}
+          token: ${{ env.INFRA_REPO_TOKEN }}
+          path: infra-repo
+
+      - name: Update image tags in infrastructure repository
+        if: ${{ env.INFRA_REPO != '' && env.INFRA_REPO_TOKEN != '' }}
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ github.sha }}
+          INFRA_MANIFEST_PATH: ${{ vars.INFRA_MANIFEST_PATH || 'infra/k8s' }}
+        run: |
+          set -euo pipefail
+          cd infra-repo
+
+          perl -0pi -e "s#image: .*ai-task-platform-backend.*#image: ${DOCKERHUB_USERNAME}/ai-task-platform-backend:${IMAGE_TAG}#g" "${INFRA_MANIFEST_PATH}/backend-deployment.yaml"
+          perl -0pi -e "s#image: .*ai-task-platform-frontend.*#image: ${DOCKERHUB_USERNAME}/ai-task-platform-frontend:${IMAGE_TAG}#g" "${INFRA_MANIFEST_PATH}/frontend-deployment.yaml"
+          perl -0pi -e "s#image: .*ai-task-platform-worker.*#image: ${DOCKERHUB_USERNAME}/ai-task-platform-worker:${IMAGE_TAG}#g" "${INFRA_MANIFEST_PATH}/worker-deployment.yaml"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${INFRA_MANIFEST_PATH}"
+          git commit -m "chore: update app images to ${IMAGE_TAG}" || exit 0
+          git push
